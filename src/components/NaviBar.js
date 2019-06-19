@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MyTemplate = ( props ) => {
+const NaviBar = ( props ) => {
     return(
         <div className="pos-f-t">
             <div className="collapse" id="navbarToggleExternalContent">
@@ -18,4 +18,4 @@ const MyTemplate = ( props ) => {
     );
 };
 
-export default MyTemplate;
+export default NaviBar;
