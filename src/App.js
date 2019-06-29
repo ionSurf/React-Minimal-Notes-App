@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import NotesApp   from './components/NotesApp';
-import NaviBar    from './components/NaviBar';
-import FooterNavi from './components/FooterNavi';
-import Modal      from './components/Modal';
+import NotesApp       from './components/NotesApp';
+import NaviBar        from './components/NaviBar';
+import FooterNavi     from './components/FooterNavi';
+import Modal          from './components/Modal';
+import ConfirmWindow  from './components/ConfirmWindow';
 
 //  Random Date Function
 function randomDate(start, end) {
@@ -19,9 +20,15 @@ class App extends Component {
         { id: 3, date: randomDate(new Date(2012, 0, 1), new Date()), content: 'This is a third note.' }
       ],
       ModalView: {
-        note: { id: 0, date: new Date(), content: "" }
+        title       : "",
+        note        : { id: 0, date: new Date(), content: "" },
+        mode        : "create",
+        saveAction  : null
+      },
+      confirmWindow: {
+        content: "Are you sure you want to delete this note?",
+        noteID:  0
       }
-      //, view: "dashboard"
     };
   }
 
@@ -29,22 +36,12 @@ class App extends Component {
     console.log( this.state.notes );
   }
 
-  updateModalView = ( note_id ) => {
-    const note = this.state.notes.find( (note) => note.id === note_id ); console.log( note.content );
-
-    this.setState({
-      ModalView: {
-        note: note
-      }
-    });
-  };
-
   /** 
     *   App Functions
     */ 
 
   addNote = ( note ) => {
-    note.id = Math.random();
+    console.log( note );
     let notes = [ ...this.state.notes, note ];
     this.setState({
       notes: notes
@@ -69,6 +66,7 @@ class App extends Component {
   };
   
   deleteNote = ( note_id ) => {
+    console.log( "deleteNote called with id: ", note_id );
     const notes = this.state.notes.filter( note => {
       return note.id !== note_id;
     } );
@@ -88,32 +86,64 @@ class App extends Component {
     console.log( result );
   };
 
-  openDialog () {};
+  updateEditWindow = ( note_id ) => {
+    if ( note_id !== undefined ) {
+      const note = this.state.notes.find( (note) => note.id === note_id ); console.log( note.content );
 
-  closeDialog() {};
+      this.setState({
+        ModalView: {
+          title : note.date.getSeconds().toString() + " seconds ago",
+          note : note,
+          mode : "edit",
+          saveAction : this.editNote
+        }
+      });
+    } else {
+      const note = { id: Math.floor(Math.random() * 100), date: new Date(), content: 'Write something here...' };
 
-  showMenu() {};
+      this.setState({
+        ModalView: {
+          title : "New Note",
+          note: note,
+          mode: "create",
+          saveAction : this.addNote
+        }
+      });
+    }
+  };
 
-  hideMenu() {};
-
-  showSidebar() {};
-
-  hideSidebar() {};
+  updateConfirmWindow = ( note_id ) => {
+    console.log( "updateConfirmWindow called", note_id );
+    this.setState({
+      confirmWindow: {
+        content : "Are you sure you want to delete this note?",
+        noteID  : note_id
+      }
+    });
+  };
 
   render() { return (
     <div className="notes-app">
       <NaviBar title="Notes App"></NaviBar>
       <main role="main" className="flex-shrink-0">
           <NotesApp 
-            notes           = { this.state.notes }
-            addNote         = { this.addNote }
-            updateModalView = { this.updateModalView }
-            deleteNote      = { this.deleteNote } />
+            notes        = { this.state.notes }
+            addNote      = { this.addNote }  
+            handleEdit   = { this.updateEditWindow }
+            handleDelete = { this.updateConfirmWindow } />
       </main>
-      <FooterNavi />
+      <FooterNavi
+        handleCreate     = { this.updateEditWindow } />
       <Modal
-        note      = { this.state.ModalView.note }
-        editNote  = { this.editNote } />
+        title       = { this.state.ModalView.title }
+        note        = { this.state.ModalView.note }
+        saveHandle  = { this.state.ModalView.saveAction }
+        addNote     = { this.addNote }
+        editNote    = { this.editNote } />
+      <ConfirmWindow
+        content     = { this.state.confirmWindow.content }
+        noteID      = { this.state.confirmWindow.noteID }
+        deleteNote  = { this.deleteNote } />
     </div>
   ); };
 }

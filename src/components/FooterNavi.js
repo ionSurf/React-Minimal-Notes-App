@@ -8,7 +8,9 @@ import React from 'react';
     </footer>
 ) };*/
 
-const FooterNavi = ( props ) => { return (
+const FooterNavi = ({
+  handleCreate
+}) => { return (
 <nav className="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark">
   <a className="navbar-brand" href="/">Bottom navbar</a>
   <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,8 +37,8 @@ const FooterNavi = ( props ) => { return (
       </li>
     </ul>
   </div>
-  <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-      Launch demo modal
+  <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal" onClick={() => { handleCreate() }}>
+      Create new note
   </button>
 </nav>
   ) };
